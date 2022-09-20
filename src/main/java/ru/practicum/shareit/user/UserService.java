@@ -1,23 +1,19 @@
 package ru.practicum.shareit.user;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 
-import javax.validation.Valid;
 import java.util.List;
 
 public interface UserService {
 
-    User create (User user) throws Exception;
+    UserDto create(UserDto user) throws Exception;
 
-    User update (long userId, UserDto userDto) throws Exception;
+    UserDto update(long userId, UserDto userDto) throws Exception;
 
-    User find (long id);
+    UserDto find(long id);
 
-    List<User> findAll ();
+    List<UserDto> findAll();
 
-    void delete (long userId);
+    void delete(long userId);
 
 }

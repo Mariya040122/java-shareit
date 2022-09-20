@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
@@ -15,43 +14,45 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping
+@RequestMapping("/users")
 public class UserController {
     private final UserService service;
 
     @Autowired
-    public UserController(UserService service){
+    public UserController(UserService service) {
         this.service = service;
-    }
-    @SneakyThrows
-    @PostMapping(value = "/users")
-    public User create(@Valid @RequestBody User user) {
-        log.info("Получен запрос на добавление пользователя");
-        return service.create(user);
     }
 
     @SneakyThrows
-    @PatchMapping("/users/{userId}")
-    public User update (@PathVariable long userId, @Valid @RequestBody UserDto user) {
+    @PostMapping
+    public UserDto create(@Valid @RequestBody UserDto userDto) {
+        log.info("Получен запрос на добавление пользователя");
+        return service.create(userDto);
+    }
+
+    @SneakyThrows
+    @PatchMapping("/{userId}")
+    public UserDto update(@PathVariable long userId, @Valid @RequestBody UserDto user) {
         log.info("Получен запрос на изменение данных пользователя");
         return service.update(userId, user);
     }
 
+
     @SneakyThrows
-    @GetMapping("/users/{id}")
-    public User find (@PathVariable long id) {
+    @GetMapping("/{id}")
+    public UserDto find(@PathVariable long id) {
         log.info("Получен запрос на вывод данных пользователя");
         return service.find(id);
     }
 
     @SneakyThrows
-    @GetMapping("/users")
-    public List<User> findAll () {
+    @GetMapping
+    public List<UserDto> findAll() {
         return service.findAll();
     }
 
-    @DeleteMapping ("/users/{userId}")
-    public void delete (@PathVariable long userId){
+    @DeleteMapping("/{userId}")
+    public void delete(@PathVariable long userId) {
         log.info("Получен запрос на удаление пользователя");
         service.delete(userId);
     }

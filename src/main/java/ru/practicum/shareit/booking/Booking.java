@@ -6,9 +6,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Data
 public class Booking {
 
@@ -19,10 +16,4 @@ public class Booking {
     User booker; //пользователь, который осуществляет бронирование
     String status; //статус бронирования
 
-    public enum status { // статус бронирования
-        WAITING,
-        APPROVED,
-        REJECTED,
-        CANCELED
-    }
 }
