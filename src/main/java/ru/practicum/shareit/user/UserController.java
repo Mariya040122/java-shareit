@@ -37,6 +37,7 @@ public class UserController {
         return service.update(userId, user);
     }
 
+
     @SneakyThrows
     @GetMapping("/users/{id}")
     public User find (@PathVariable long id) {

@@ -7,8 +7,8 @@ import lombok.*;
  * TODO Sprint add-controllers.
  */
 
-@AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class ItemDto {
 
     long id;  //уникальный идентификатор вещи
