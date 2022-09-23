@@ -1,7 +1,13 @@
 package ru.practicum.shareit.item.dto;
 
-/**
- * TODO Sprint add-controllers.
- */
+import lombok.*;
+
+@Getter
+@Setter
 public class ItemDto {
+
+    long id;  //уникальный идентификатор вещи
+    String name; // краткое название
+    String description; //развёрнутое описание
+    Boolean available; //статус о том, доступна или нет вещь для аренды
 }
