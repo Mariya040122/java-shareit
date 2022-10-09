@@ -2,21 +2,42 @@ package ru.practicum.shareit.item.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
-public class Item {
+@ToString
+@Entity
+@Table(name = "items")
+public class Item implements Serializable {
 
-    long id;  //уникальный идентификатор вещи
-    @NotBlank
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id; //уникальный идентификатор вещи
+
+    @Column(name = "name", nullable = false)
     String name; // краткое название
-    @NotBlank
+
+    @Column(name = "description", nullable = false)
     String description; //развёрнутое описание
-    @NotNull
+
+    @Column(name = "available", nullable = false)
     Boolean available; //статус о том, доступна или нет вещь для аренды
-    long owner;  //владелец вещи
-    String request; //ссылка на запрос
+
+    @JoinColumn(name = "owner")
+    @ManyToOne(fetch = FetchType.EAGER)
+    User owner;  //владелец вещи
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "item_id")
+    List<Comment> comments;
+
+    @Column(name = "request")
+    long request; //ссылка на запрос
 }

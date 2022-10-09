@@ -9,6 +9,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
         if (!UserValidator.isName(user.getName()) || !UserValidator.isEmail(user.getEmail())) {
             throw new BadRequestException("Некорректный запрос при добавлении пользователя");
         }
-        user = repository.create(user);
+        user = repository.save(user);
         if (user == null) {
             throw new ConflictException("Конфликт, пользователь с таким Email существует");
         }
@@ -36,28 +37,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(long userId, UserDto userDto) throws ConflictException, NotFoundException {
-        User user = repository.find(userId);
+    public UserDto update(long userId, UserDto userDto) throws NotFoundException {
+        User user = repository.getReferenceById(userId);
         User newUser = UserMapper.fromUserDto(userDto);
         if (user != null) {
-            newUser.setId(user.getId());
-            if (!UserValidator.isName(newUser.getName())) {
-                newUser.setName(user.getName());
+            if (UserValidator.isName(newUser.getName())) {
+                user.setName(newUser.getName());
             }
-            if (!UserValidator.isEmail(newUser.getEmail())) {
-                newUser.setEmail(user.getEmail());
+            if (UserValidator.isEmail(newUser.getEmail())) {
+                user.setEmail(newUser.getEmail());
             }
         } else throw new NotFoundException("Пользователь не найден");
-        user = repository.update(userId, newUser);
-        if (user == null) {
-            throw new ConflictException("Конфликт, такой email существует");
-        }
+        user = repository.save(user);
         return UserMapper.toUserDto(user);
     }
 
     @Override
-    public UserDto find(long id) {
-        return UserMapper.toUserDto(repository.find(id));
+    public UserDto find(long id) throws NotFoundException {
+        Optional<User> user = repository.findById(id);
+        if (user.isEmpty()) {
+            throw new NotFoundException("");
+        }
+        return UserMapper.toUserDto(user.get());
     }
 
     @Override
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(long userId) {
-        repository.delete(userId);
+        repository.delete(repository.getReferenceById(userId));
     }
 
 }

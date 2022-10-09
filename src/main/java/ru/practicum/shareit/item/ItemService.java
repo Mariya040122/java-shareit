@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithBookingDTO;
 
 import java.util.List;
 
@@ -12,9 +13,9 @@ public interface ItemService {
 
     ItemDto update(long userId, long itemId, ItemDto item) throws NotFoundException;
 
-    ItemDto find(long id);
+    ItemWithBookingDTO find(long id) throws NotFoundException;
 
-    List<ItemDto> findAll(long userId);
+    List<ItemWithBookingDTO> findAll(long userId);
 
     List<ItemDto> search(String text);
 }

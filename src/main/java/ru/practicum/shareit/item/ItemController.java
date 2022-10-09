@@ -4,7 +4,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDTO;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithBookingDTO;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -16,10 +18,12 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
+    private final CommentService commentService;
 
     @Autowired
-    public ItemController(ItemService itemService) {
+    public ItemController(ItemService itemService, CommentService commentService) {
         this.itemService = itemService;
+        this.commentService = commentService;
     }
 
 
@@ -38,14 +42,15 @@ public class ItemController {
         return itemService.update(userId, itemId, item);
     }
 
+    @SneakyThrows
     @GetMapping("/{itemId}")
-    public ItemDto find(@PathVariable long itemId) {
+    public ItemWithBookingDTO find(@PathVariable long itemId) {
         log.info("Получен запрос на получение данных о вещи");
         return itemService.find(itemId);
     }
 
     @GetMapping
-    public List<ItemDto> findAll(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemWithBookingDTO> findAll(@RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Получен запрос на вывод данных о всех вещах");
         return itemService.findAll(userId);
     }
@@ -54,5 +59,14 @@ public class ItemController {
     public List<ItemDto> search(@RequestParam(name = "text", required = true) String text) {
         log.info("Получен запрос на поиск вещи");
         return itemService.search(text.toLowerCase());
+    }
+
+    @SneakyThrows
+    @PostMapping("/{itemId}/comment")
+    public CommentDTO createComment(@RequestHeader("X-Sharer-User-Id") long userId,
+                                    @PathVariable long itemId,
+                                    @Valid @RequestBody CommentDTO commentDTO) {
+        log.info("Получен запрос на добавление вещи");
+        return commentService.createComment(userId, itemId, commentDTO);
     }
 }
