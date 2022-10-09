@@ -39,7 +39,7 @@ public class BookingController {
 
     @SneakyThrows
     @PatchMapping("/{bookingId}")
-    public Booking ConfirmationOrRejection(@RequestHeader("X-Sharer-User-Id") long userId,
+    public Booking confirmationOrRejection(@RequestHeader("X-Sharer-User-Id") long userId,
                                            @PathVariable long bookingId,
                                            @RequestParam(name = "approved", required = true) Boolean approved) {
         log.info("Подтверждение или отклонение запроса на бронирование");
