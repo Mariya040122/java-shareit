@@ -72,17 +72,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemWithBookingDTO find(long id) throws NotFoundException {
+    public ItemWithBookingDTO find(long userId, long id) throws NotFoundException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException(""));
         ItemWithBookingDTO itemDTO = ItemMapper.toItemWithBookingDTO(item);
-        LocalDateTime now = LocalDateTime.now();
-        List<Booking> bookings = bookingRepository.findByItemIdAndEndDate(itemDTO.getId(), now);
-        if (!bookings.isEmpty()) {
-            itemDTO.setLastBooking(BookingMapper.toBookingDto(bookings.get(0)));
-        }
-        bookings = bookingRepository.findByItemIdAndStartDate(itemDTO.getId(), now);
-        if (!bookings.isEmpty()) {
-            itemDTO.setNextBooking(BookingMapper.toBookingDto(bookings.get(0)));
+        if (item.getOwner().getId() == userId) {
+            LocalDateTime now = LocalDateTime.now();
+            List<Booking> lastBookings = bookingRepository.findByItemIdAndEndDate(id, now);
+            if (!lastBookings.isEmpty()) {
+                itemDTO.setLastBooking(BookingMapper.toBookingDto(lastBookings.get(0)));
+            }
+            List<Booking> nextBookings = bookingRepository.findByItemIdAndStartDate(id, now);
+            if (!nextBookings.isEmpty()) {
+                itemDTO.setNextBooking(BookingMapper.toBookingDto(nextBookings.get(0)));
+            }
         }
         return itemDTO;
     }

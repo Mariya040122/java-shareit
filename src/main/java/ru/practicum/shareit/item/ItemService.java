@@ -13,7 +13,7 @@ public interface ItemService {
 
     ItemDto update(long userId, long itemId, ItemDto item) throws NotFoundException;
 
-    ItemWithBookingDTO find(long id) throws NotFoundException;
+    ItemWithBookingDTO find(long userId, long id) throws NotFoundException;
 
     List<ItemWithBookingDTO> findAll(long userId);
 

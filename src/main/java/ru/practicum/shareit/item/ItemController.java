@@ -44,9 +44,9 @@ public class ItemController {
 
     @SneakyThrows
     @GetMapping("/{itemId}")
-    public ItemWithBookingDTO find(@PathVariable long itemId) {
+    public ItemWithBookingDTO find(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
         log.info("Получен запрос на получение данных о вещи");
-        return itemService.find(itemId);
+        return itemService.find(userId, itemId);
     }
 
     @GetMapping
