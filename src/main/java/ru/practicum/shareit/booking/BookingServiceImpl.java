@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.BadRequestException;
@@ -15,9 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.practicum.shareit.booking.model.Booking.Status.*;
-import static ru.practicum.shareit.booking.model.Booking.Status.REJECTED;
-import static ru.practicum.shareit.booking.model.Booking.Status.WAITING;
+import static ru.practicum.shareit.Status.*;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -84,56 +83,57 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> findAll(long userId, Booking.State state) throws NotFoundException {
+    public List<Booking> findAll(long userId, State state) throws NotFoundException {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найдено"));
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllBookings(userId);
+                bookings = bookingRepository.findByBookerIdOrderByStartDesc(userId);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findCurrentBookings(userId, now);
+                bookings = bookingRepository.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
                 break;
             case PAST:
-                bookings = bookingRepository.findPastBookings(userId, now);
+                bookings = bookingRepository.findByBookerIdAndEndBeforeOrderByStartDesc(userId, now);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findFutureBookings(userId, now);
+                bookings = bookingRepository.findByBookerIdAndStartAfterOrderByStartDesc(userId, now);
                 break;
             case WAITING:
-                bookings = bookingRepository.findByStatusBookings(userId, WAITING.name());
+                bookings = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, WAITING);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findByStatusBookings(userId, REJECTED.name());
+                bookings = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, REJECTED);
                 break;
         }
         return bookings;
     }
 
     @Override
-    public List<Booking> allUserItems(long userId, Booking.State state) throws NotFoundException {
+    public List<Booking> allUserItems(long userId, State state) throws NotFoundException {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найдено"));
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllUserItemsBookings(userId);
+                bookings = bookingRepository.findByItem_OwnerIdOrderByStartDesc(userId);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findCurrentUserItemsBookings(userId, now);
+                bookings = bookingRepository.findByItem_OwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                        now, now);
                 break;
             case PAST:
-                bookings = bookingRepository.findPastUserItemsBookings(userId, now);
+                bookings = bookingRepository.findByItem_OwnerIdAndEndBeforeOrderByStartDesc(userId, now);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findFutureUserItemsBookings(userId, now);
+                bookings = bookingRepository.findByItem_OwnerIdAndStartAfterOrderByStartDesc(userId, now);
                 break;
             case WAITING:
-                bookings = bookingRepository.findByStatusUserItemsBookings(userId, WAITING.name());
+                bookings = bookingRepository.findByItem_OwnerIdAndStatusOrderByStartDesc(userId, WAITING);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findByStatusUserItemsBookings(userId, REJECTED.name());
+                bookings = bookingRepository.findByItem_OwnerIdAndStatusOrderByStartDesc(userId, REJECTED);
                 break;
         }
         return bookings;

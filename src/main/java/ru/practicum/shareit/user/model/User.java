@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.io.Serializable;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ import javax.validation.constraints.*;
 @Table(name = "users",
         uniqueConstraints = {@UniqueConstraint(columnNames = "email")}
 )
-public class User {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -77,11 +77,11 @@ public class ItemServiceImpl implements ItemService {
         ItemWithBookingDTO itemDTO = ItemMapper.toItemWithBookingDTO(item);
         if (item.getOwner().getId() == userId) {
             LocalDateTime now = LocalDateTime.now();
-            List<Booking> lastBookings = bookingRepository.findByItemIdAndEndDate(id, now);
+            List<Booking> lastBookings = bookingRepository.findByItemIdAndEndBeforeOrderByEndDesc(id, now);
             if (!lastBookings.isEmpty()) {
                 itemDTO.setLastBooking(BookingMapper.toBookingDto(lastBookings.get(0)));
             }
-            List<Booking> nextBookings = bookingRepository.findByItemIdAndStartDate(id, now);
+            List<Booking> nextBookings = bookingRepository.findByItemIdAndStartAfterOrderByStartAsc(id, now);
             if (!nextBookings.isEmpty()) {
                 itemDTO.setNextBooking(BookingMapper.toBookingDto(nextBookings.get(0)));
             }
@@ -97,11 +97,11 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
         for (ItemWithBookingDTO item : items) {
             LocalDateTime now = LocalDateTime.now();
-            List<Booking> bookings = bookingRepository.findByItemIdAndEndDate(item.getId(), now);
+            List<Booking> bookings = bookingRepository.findByItemIdAndEndBeforeOrderByEndDesc(item.getId(), now);
             if (!bookings.isEmpty()) {
                 item.setLastBooking(BookingMapper.toBookingDto(bookings.get(0)));
             }
-            bookings = bookingRepository.findByItemIdAndStartDate(item.getId(), now);
+            bookings = bookingRepository.findByItemIdAndStartAfterOrderByStartAsc(item.getId(), now);
             if (!bookings.isEmpty()) {
                 item.setNextBooking(BookingMapper.toBookingDto(bookings.get(0)));
             }

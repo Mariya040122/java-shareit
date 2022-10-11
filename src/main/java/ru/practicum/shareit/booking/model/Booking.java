@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.practicum.shareit.Status;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
@@ -16,7 +18,7 @@ import java.time.LocalDateTime;
 @ToString
 @Entity
 @Table(name = "bookings")
-public class Booking {
+public class Booking implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,12 +43,6 @@ public class Booking {
     @Column
     Status status; //статус бронирования
 
-    public enum Status {
-        WAITING, APPROVED, REJECTED, CANCELED
-    }
 
-    public enum State {
-        ALL, CURRENT, PAST, FUTURE, WAITING, REJECTED
-    }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.ErrorResponse;
@@ -56,7 +57,7 @@ public class BookingController {
 
     @GetMapping
     public List<Booking> findAll(@RequestHeader("X-Sharer-User-Id") long userId,
-                                 @RequestParam(name = "state", defaultValue = "ALL") Booking.State state)
+                                 @RequestParam(name = "state", defaultValue = "ALL") State state)
             throws NotFoundException {
         log.info("Получение данных о всех бронированиях");
         return service.findAll(userId, state);
@@ -65,7 +66,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<Booking> allUserItems(@RequestHeader("X-Sharer-User-Id") long userId,
-                                      @RequestParam(name = "state", defaultValue = "ALL") Booking.State state)
+                                      @RequestParam(name = "state", defaultValue = "ALL") State state)
             throws NotFoundException {
         log.info("Получение списка бронирований для всех вещей текущего пользователя.");
         return service.allUserItems(userId, state);

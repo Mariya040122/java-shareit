@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import ru.practicum.shareit.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.BadRequestException;
@@ -19,9 +20,9 @@ public interface BookingService {
     Booking find(long userId, long bookingId) throws NotFoundException;
 
 
-    List<Booking> findAll(long userId, Booking.State state) throws NotFoundException;
+    List<Booking> findAll(long userId, State state) throws NotFoundException;
 
 
-    List<Booking> allUserItems(long userId, Booking.State state) throws NotFoundException;
+    List<Booking> allUserItems(long userId, State state) throws NotFoundException;
 
 }

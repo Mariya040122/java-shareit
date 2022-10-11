@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import ru.practicum.shareit.Status;
 import ru.practicum.shareit.booking.model.Booking;
 
 import java.time.LocalDateTime;
@@ -18,5 +19,5 @@ public class BookingDto {
     LocalDateTime end; //дата и время конца бронирования
     Long itemId; //вещь, которую пользователь бронирует
     Long bookerId; //пользователь, который осуществляет бронирование
-    Booking.Status status; //статус бронирования
+    Status status; //статус бронирования
 }

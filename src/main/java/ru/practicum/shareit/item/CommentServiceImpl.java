@@ -12,7 +12,8 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-import static ru.practicum.shareit.booking.model.Booking.Status.APPROVED;
+import static ru.practicum.shareit.Status.*;
+
 
 @Service
 public class CommentServiceImpl implements CommentService {
