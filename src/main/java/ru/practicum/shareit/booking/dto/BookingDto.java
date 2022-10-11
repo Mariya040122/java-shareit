@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.shareit.Status;
-import ru.practicum.shareit.booking.model.Booking;
+
 
 import java.time.LocalDateTime;
 
