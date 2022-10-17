@@ -3,18 +3,32 @@ package ru.practicum.shareit.user.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.io.Serializable;
 
 @Getter
 @Setter
-public class User {
+@ToString
+@Entity
+@Table(name = "users",
+        uniqueConstraints = {@UniqueConstraint(columnNames = "email")}
+)
+public class User implements Serializable {
 
-    long id; //уникальный идентификатор пользователя
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "name")
     @NotBlank(message = "Имя не может быть пустым!")
-    String name; //имя или логин пользователя
-    @NotNull
+    private String name; //имя или логин пользователя
+
+    @Column(name = "email")
     @Email(message = "Электронная почта не может быть пустой и должна содержать символ @!")
-    String email; //адрес электронной почты
+    private String email; //адрес электронной почты
 
 }

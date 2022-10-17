@@ -1,7 +1,10 @@
 package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithBookingDTO;
 import ru.practicum.shareit.item.model.Item;
+
+import java.util.stream.Collectors;
 
 public class ItemMapper {
 
@@ -24,4 +27,25 @@ public class ItemMapper {
 
     }
 
+    public static ItemWithBookingDTO toItemWithBookingDTO(Item item) {
+        ItemWithBookingDTO itemWithBookingDTO = new ItemWithBookingDTO();
+        itemWithBookingDTO.setId(item.getId());
+        itemWithBookingDTO.setName(item.getName());
+        itemWithBookingDTO.setDescription(item.getDescription());
+        itemWithBookingDTO.setAvailable(item.getAvailable());
+        itemWithBookingDTO.setComments(item.getComments().stream()
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList()));
+        return itemWithBookingDTO;
+    }
+
+    public static Item fromItemWithBookingDTO(ItemWithBookingDTO itemWithBookingDTO) {
+        Item item = new Item();
+        item.setId(itemWithBookingDTO.getId());
+        item.setName(itemWithBookingDTO.getName());
+        item.setDescription(itemWithBookingDTO.getDescription());
+        item.setAvailable(itemWithBookingDTO.getAvailable());
+        return item;
+
+    }
 }
