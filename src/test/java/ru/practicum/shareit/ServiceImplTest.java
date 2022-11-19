@@ -173,7 +173,7 @@ public class ServiceImplTest {
     @DisplayName("06.Создание бронирования")
     void createBookingTest() throws BadRequestException, NotFoundException {
 
-        LocalDateTime startTime = LocalDateTime.now().plusNanos(500000000L).truncatedTo(ChronoUnit.MILLIS);
+        LocalDateTime startTime = LocalDateTime.now().plusNanos(100000000L).truncatedTo(ChronoUnit.MILLIS);
         LocalDateTime endTime = LocalDateTime.now().plusDays(1L).truncatedTo(ChronoUnit.MILLIS);
 
 
