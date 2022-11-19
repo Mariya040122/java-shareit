@@ -189,25 +189,25 @@ public class ItemControllerTest {
     @Test
     @DisplayName("06.Создание комментария")
     void createCommentItemTest() throws Exception {
-        CommentDTO сomment = new CommentDTO(
+        CommentDTO comment = new CommentDTO(
                 0L,
                 "Шуруповерт хороший",
                 "Duo",
                 null);
 
         when(commentService.createComment(eq(1L), eq(1L), any()))
-                .thenReturn(сomment);
+                .thenReturn(comment);
 
         mvc.perform(post("/items/1/comment")
                         .header("X-Sharer-User-Id", 1L)
-                        .content(mapper.writeValueAsString(сomment))
+                        .content(mapper.writeValueAsString(comment))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(сomment.getId()), Long.class))
-                .andExpect(jsonPath("$.text", is(сomment.getText())))
-                .andExpect(jsonPath("$.authorName", is(сomment.getAuthorName())))
-                .andExpect(jsonPath("$.created", is(сomment.getCreated())));
+                .andExpect(jsonPath("$.id", is(comment.getId()), Long.class))
+                .andExpect(jsonPath("$.text", is(comment.getText())))
+                .andExpect(jsonPath("$.authorName", is(comment.getAuthorName())))
+                .andExpect(jsonPath("$.created", is(comment.getCreated())));
     }
 }

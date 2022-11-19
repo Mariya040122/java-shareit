@@ -36,14 +36,14 @@ public class JsonCommentTesting {
     }
 
     @Test
-    void сommentDtoSerializeTest() throws IOException {
+    void commentDtoSerializeTest() throws IOException {
 
         assertThat(this.json.write(commentDTO))
                 .isEqualToJson(getClass().getResourceAsStream("/commentDTO.json"));
     }
 
     @Test
-    void сommentDtoDeserializeTest() throws IOException, URISyntaxException {
+    void commentDtoDeserializeTest() throws IOException, URISyntaxException {
 
         assertThat(this.json.parse(Files.readAllBytes(Path.of(ClassLoader.getSystemResource("commentDTO.json")
                 .toURI()))).getObject())
