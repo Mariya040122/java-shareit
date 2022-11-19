@@ -40,14 +40,14 @@ public class JsonBookingTesting {
     }
 
     @Test
-    void BookingDtoSerializeTest() throws IOException {
+    void bookingDtoSerializeTest() throws IOException {
 
         assertThat(this.json.write(bookingDto))
                 .isEqualToJson(getClass().getResourceAsStream("/bookingDTO.json"));
     }
 
     @Test
-    void BookingDtoDeserializeTest() throws IOException, URISyntaxException {
+    void bookingDtoDeserializeTest() throws IOException, URISyntaxException {
 
         assertThat(this.json.parse(Files.readAllBytes(Path.of(ClassLoader.getSystemResource("bookingDTO.json")
                 .toURI()))).getObject())

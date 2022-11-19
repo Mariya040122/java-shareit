@@ -16,7 +16,7 @@ public class OffsetPageRequest extends PageRequest {
     }
 
     @Override
-    public long getOffset(){
+    public long getOffset() {
         return this.offset;
     }
 }
