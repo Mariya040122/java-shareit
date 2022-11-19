@@ -20,9 +20,9 @@ public interface BookingService {
     Booking find(long userId, long bookingId) throws NotFoundException;
 
 
-    List<Booking> findAll(long userId, State state) throws NotFoundException;
+    List<Booking> findAll(long userId, int from, int size, State state) throws NotFoundException, BadRequestException;
 
 
-    List<Booking> allUserItems(long userId, State state) throws NotFoundException;
+    List<Booking> allUserItems(long userId, int from, int size, State state) throws NotFoundException;
 
 }

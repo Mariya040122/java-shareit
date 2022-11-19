@@ -38,16 +38,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(long userId, UserDto userDto) throws NotFoundException {
-        User user = repository.getReferenceById(userId);
+        User user = repository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         User newUser = UserMapper.fromUserDto(userDto);
-        if (user != null) {
-            if (UserValidator.isName(newUser.getName())) {
-                user.setName(newUser.getName());
-            }
-            if (UserValidator.isEmail(newUser.getEmail())) {
-                user.setEmail(newUser.getEmail());
-            }
-        } else throw new NotFoundException("Пользователь не найден");
+
+        if (UserValidator.isName(newUser.getName())) {
+            user.setName(newUser.getName());
+        }
+        if (UserValidator.isEmail(newUser.getEmail())) {
+            user.setEmail(newUser.getEmail());
+        }
         user = repository.save(user);
         return UserMapper.toUserDto(user);
     }
@@ -56,7 +55,7 @@ public class UserServiceImpl implements UserService {
     public UserDto find(long id) throws NotFoundException {
         Optional<User> user = repository.findById(id);
         if (user.isEmpty()) {
-            throw new NotFoundException("");
+            throw new NotFoundException("Ошибка");
         }
         return UserMapper.toUserDto(user.get());
     }

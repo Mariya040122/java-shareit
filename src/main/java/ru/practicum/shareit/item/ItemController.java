@@ -50,15 +50,19 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemWithBookingDTO> findAll(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemWithBookingDTO> findAll(@RequestHeader("X-Sharer-User-Id") long userId,
+                                            @RequestParam(name = "from", defaultValue = "0") int from,
+                                            @RequestParam(name = "size", defaultValue = Integer.MAX_VALUE + "") int size) {
         log.info("Получен запрос на вывод данных о всех вещах");
-        return itemService.findAll(userId);
+        return itemService.findAll(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam(name = "text", required = true) String text) {
+    public List<ItemDto> search(@RequestParam(name = "text", required = true) String text,
+                                @RequestParam(name = "from", defaultValue = "0") int from,
+                                @RequestParam(name = "size", defaultValue = Integer.MAX_VALUE + "") int size) {
         log.info("Получен запрос на поиск вещи");
-        return itemService.search(text.toLowerCase());
+        return itemService.search(text.toLowerCase(), from, size);
     }
 
     @SneakyThrows
@@ -66,7 +70,7 @@ public class ItemController {
     public CommentDTO createComment(@RequestHeader("X-Sharer-User-Id") long userId,
                                     @PathVariable long itemId,
                                     @Valid @RequestBody CommentDTO commentDTO) {
-        log.info("Получен запрос на добавление вещи");
+        log.info("Получен запрос на добавление коментария");
         return commentService.createComment(userId, itemId, commentDTO);
     }
 }

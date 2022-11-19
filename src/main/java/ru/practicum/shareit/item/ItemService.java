@@ -15,7 +15,9 @@ public interface ItemService {
 
     ItemWithBookingDTO find(long userId, long id) throws NotFoundException;
 
-    List<ItemWithBookingDTO> findAll(long userId);
+    List<ItemWithBookingDTO> findAll(long userId, int from, int size);
 
-    List<ItemDto> search(String text);
+    List<ItemDto> search(String text, int from, int size);
+
+
 }

@@ -4,10 +4,13 @@ import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemDto {
 
-    long id;  //уникальный идентификатор вещи
+    Long id;  //уникальный идентификатор вещи
     String name; // краткое название
     String description; //развёрнутое описание
     Boolean available; //статус о том, доступна или нет вещь для аренды
+    Long requestId; //ссылка на запрос
 }
