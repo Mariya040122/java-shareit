@@ -9,7 +9,7 @@ import ru.practicum.shareit.request.model.Request;
 import java.util.List;
 
 public interface RequestService {
-    public RequestDto create(long userId, RequestDto requestDto) throws NotFoundException, BadRequestException;
+    public RequestDto create(long userId, RequestDto requestDto) throws NotFoundException;
 
     public List<Request> find(long userId) throws NotFoundException;
 

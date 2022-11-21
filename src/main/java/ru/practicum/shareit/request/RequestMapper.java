@@ -1,7 +1,11 @@
 package ru.practicum.shareit.request;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.request.dto.RequestDto;
 import ru.practicum.shareit.request.model.Request;
+
+import java.time.LocalDateTime;
 
 public class RequestMapper {
     public static RequestDto toRequestDto(Request request) {

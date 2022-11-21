@@ -16,6 +16,11 @@ import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.ItemServiceImpl;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.RequestRepository;
+import ru.practicum.shareit.request.RequestService;
+import ru.practicum.shareit.request.RequestServiceImpl;
+import ru.practicum.shareit.request.dto.RequestDto;
+import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.UserServiceImpl;
@@ -307,4 +312,49 @@ public class UnitServiceTesting {
         assertThatExceptionOfType(BadRequestException.class)
                 .isThrownBy(() -> bookingService.confirmationOrRejection(1L, 1L, false));
     }
+
+    @Test
+    void testCreateRequestWithMock() throws NotFoundException {
+        RequestRepository mockRequestRepository = Mockito.mock(RequestRepository.class);
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        RequestService requestService = new RequestServiceImpl(mockRequestRepository, mockUserRepository);
+
+
+        User testUserOne = new User();
+        testUserOne.setId(1L);
+        testUserOne.setName("Vasia");
+        testUserOne.setEmail("vasia@yandex.ru");
+
+        Mockito
+                .when(mockRequestRepository.save(Mockito.any(Request.class)))
+                .thenReturn(new Request(1L, "Шуруповерт ручной", testUserOne, LocalDateTime.now(), null));
+
+        Mockito
+                .when(mockUserRepository.findById(Mockito.eq(1L)))
+                .thenReturn(Optional.of(testUserOne));
+
+
+        requestService.create(1L, new RequestDto(0L, "Шуруповерт ручной",
+                null));
+        ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
+        Mockito.verify(mockRequestRepository).save(requestCaptor.capture());
+        Request request = requestCaptor.getValue();
+        assertThat(request)
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("id", 0L)
+                .hasFieldOrPropertyWithValue("description", "Шуруповерт ручной")
+                .extracting("created")
+                .isNotNull();
+        assertThat(request)
+                .extracting("requestor")
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("id", 1L)
+                .hasFieldOrPropertyWithValue("name", "Vasia");
+
+        assertThatExceptionOfType(NotFoundException.class)
+                .isThrownBy(() -> requestService.create(999L, new RequestDto(0L, "Шуруповерт ручной",
+                        LocalDateTime.now())));
+    }
+
+
 }

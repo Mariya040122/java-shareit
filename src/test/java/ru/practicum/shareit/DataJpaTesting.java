@@ -100,7 +100,6 @@ public class DataJpaTesting {
                 0L,
                 timeNow.plusMinutes(2L),
                 timeNow.plusDays(1L),
-                //LocalDateTime.of(2022,11,12,13,10),
                 itemOne,
                 addedUser,
                 WAITING

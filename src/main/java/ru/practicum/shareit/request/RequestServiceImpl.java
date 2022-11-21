@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+
 public class RequestServiceImpl implements RequestService {
     @Autowired
     private final RequestRepository requestRepository;
@@ -25,9 +26,12 @@ public class RequestServiceImpl implements RequestService {
         this.userRepository = userRepository;
     }
 
+
+
+
     @Override
-    public RequestDto create(long userId, RequestDto requestDto) throws NotFoundException, BadRequestException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(""));
+    public RequestDto create(long userId, RequestDto requestDto) throws NotFoundException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Ошибка"));
         Request newRequest = RequestMapper.fromRequestDto(requestDto);
         newRequest.setCreated(LocalDateTime.now());
         newRequest.setRequestor(user);
@@ -36,14 +40,14 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<Request> find(long userId) throws NotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(""));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Ошибка"));
         return requestRepository.findByRequestorId(userId);
     }
 
     @Override
     public List<Request> findAll(long userId, int from, int size) throws BadRequestException {
         if (from < 0 || size < 1) {
-            throw new BadRequestException("");
+            throw new BadRequestException("Ошибка");
         }
         return requestRepository.findByRequestorIdNot(userId, new OffsetPageRequest(from, size,
                 Sort.by("created").descending())).getContent();
@@ -51,8 +55,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public Request findById(long userId, long requestId) throws NotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(""));
-        Request request = requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException(""));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Ошибка"));
+        Request request = requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Ошибка"));
         return request;
     }
 }

@@ -22,6 +22,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingDTO;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.RequestService;
+import ru.practicum.shareit.request.dto.RequestDto;
+import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -31,6 +34,7 @@ import javax.persistence.TypedQuery;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,12 +52,12 @@ public class ServiceImplTest {
     private final ItemService serviceItem;
     private final CommentService serviceComment;
     private final BookingService serviceBooking;
+    private final RequestService serviceRequest;
 
 
     @Test
     void contextLoads() {
     }
-
 
     @Test
     @DisplayName("01.Создание пользователя")
@@ -237,16 +241,19 @@ public class ServiceImplTest {
     @DisplayName("09.Вывод всех бронирований")
     void findAllBookingTest() throws NotFoundException, BadRequestException {
 
-        serviceBooking.findAll(3L, 0, 1, ALL);
-
         TypedQuery<Booking> query = em.createQuery("Select b from Booking b where b.id = :id", Booking.class);
-        Booking booking = query
+        List<Booking> bookings = query
                 .setParameter("id", 1L)
-                .getSingleResult();
-
-        assertThat(booking)
+                .getResultList();
+        List<Booking> bookingService = serviceBooking.findAll(3L, 0, 1, ALL);
+        assertThat(bookingService)
                 .isNotNull()
-                .hasFieldOrPropertyWithValue("id", 1L);
+                .hasSize(1);
+        assertThat(bookings)
+                .isNotNull()
+                .hasSize(1);
+        assertThat(bookings.get(0))
+                .hasFieldOrPropertyWithValue("id", bookingService.get(0).getId());
     }
 
     @Test
@@ -306,14 +313,90 @@ public class ServiceImplTest {
     @DisplayName("13.Вывод списка предметов")
     void findAllItemTest() {
 
-        TypedQuery<Item> query = em.createQuery("Select i from Item i where i.id = :id", Item.class);
-        Item item = query
+        TypedQuery<Item> query = em.createQuery("Select i from Item i where i.owner.id = :id", Item.class);
+        List<Item> items = query
+                .setParameter("id", 1L)
+                .getResultList();
+        List<ItemWithBookingDTO> itemService = serviceItem.findAll(1L, 0, 1);
+        assertThat(itemService)
+                .isNotNull()
+                .hasSize(1);
+        assertThat(items)
+                .isNotNull()
+                .hasSize(1);
+        assertThat(items.get(0))
+                .hasFieldOrPropertyWithValue("id", itemService.get(0).getId());
+    }
+
+    @Test
+    @DisplayName("14.Создание запроса")
+    void createRequestTest() throws NotFoundException, BadRequestException {
+
+        RequestDto requestDto = new RequestDto(0L, "Шуруповерт ручной", null);
+        serviceRequest.create(1L, requestDto);
+        TypedQuery<Request> query = em.createQuery("Select r from Request r where r.id = :id", Request.class);
+        Request request = query
+                .setParameter("id", 1L)
+                .getSingleResult();
+        assertThat(request)
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("id", 1L)
+                .hasFieldOrPropertyWithValue("description", "Шуруповерт ручной")
+                .extracting("created")
+                .isNotNull();
+    }
+
+    @Test
+    @DisplayName("15.Вывод запроса пользователя")
+    void findRequestTest() throws NotFoundException {
+
+        TypedQuery<Request> query = em.createQuery("Select r from Request r where r.requestor.id = :id", Request.class);
+        List<Request> requests = query
+                .setParameter("id", 1L)
+                .getResultList();
+        List<Request> requestService = serviceRequest.find(1L);
+        assertThat(requestService)
+                .isNotNull()
+                .hasSize(1);
+        assertThat(requests)
+                .isNotNull()
+                .hasSize(1);
+        assertThat(requests.get(0))
+                .hasFieldOrPropertyWithValue("id", requestService.get(0).getId());
+
+    }
+
+    @Test
+    @DisplayName("16.Вывод запросов других пользователей")
+    void findAllRequestTest() throws BadRequestException {
+
+        TypedQuery<Request> query = em.createQuery("Select r from Request r where not r.requestor.id = :id", Request.class);
+
+        List<Request> requests = query
+                .setParameter("id", 2L)
+                .getResultList();
+        List<Request> requestService = serviceRequest.findAll(2L, 0, 1);
+        assertThat(requestService)
+                .isNotNull()
+                .hasSize(1);
+        assertThat(requests)
+                .isNotNull()
+                .hasSize(1);
+        assertThat(requests.get(0))
+                .hasFieldOrPropertyWithValue("id", requestService.get(0).getId());
+    }
+
+    @Test
+    @DisplayName("17.Вывод запроса пользователя")
+    void findByIdRequestTest() throws NotFoundException {
+
+        TypedQuery<Request> query = em.createQuery("Select r from Request r where r.id = :id", Request.class);
+        Request request = query
                 .setParameter("id", 1L)
                 .getSingleResult();
 
-        assertThat(serviceItem.findAll(1L, 0, 1))
+        assertThat(serviceRequest.findById(1L, 1L))
                 .isNotNull()
-                .hasSize(1)
-                .extracting(ItemWithBookingDTO::getName).containsOnly("Шуруповерт");
+                .hasFieldOrPropertyWithValue("id", 1L);
     }
 }
