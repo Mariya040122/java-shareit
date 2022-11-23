@@ -3,18 +3,15 @@ package ru.practicum.shareit.ControllerTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.booking.BookingController;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.CommentService;
-import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -31,21 +28,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.practicum.shareit.Status.WAITING;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(BookingController.class)
+@AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.DisplayName.class)
 public class BookingControllerTest {
 
-    @Mock
-    private ItemService itemService;
-    @Mock
-    private CommentService commentService;
-    @Mock
+    @MockBean
     private BookingService bookingService;
-    @InjectMocks
-    private BookingController controller;
 
     private final ObjectMapper mapper = new ObjectMapper();
-
+    @Autowired
     private MockMvc mvc;
 
     private Booking booking;
@@ -58,9 +50,6 @@ public class BookingControllerTest {
     void setUp() {
 
         mapper.registerModule(new JavaTimeModule());
-        mvc = MockMvcBuilders
-                .standaloneSetup(controller)
-                .build();
 
         user = new User(1L, "Duo", "Duo@test.ru");
 
@@ -231,3 +220,4 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.error", is("Unknown state: UNSUPPORTED_STATUS")));
     }
 }
+

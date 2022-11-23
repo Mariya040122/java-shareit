@@ -27,11 +27,9 @@ public class RequestServiceImpl implements RequestService {
     }
 
 
-
-
     @Override
     public RequestDto create(long userId, RequestDto requestDto) throws NotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Ошибка"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Request newRequest = RequestMapper.fromRequestDto(requestDto);
         newRequest.setCreated(LocalDateTime.now());
         newRequest.setRequestor(user);
@@ -40,23 +38,20 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<Request> find(long userId) throws NotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Ошибка"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         return requestRepository.findByRequestorId(userId);
     }
 
     @Override
     public List<Request> findAll(long userId, int from, int size) throws BadRequestException {
-        if (from < 0 || size < 1) {
-            throw new BadRequestException("Ошибка");
-        }
         return requestRepository.findByRequestorIdNot(userId, new OffsetPageRequest(from, size,
                 Sort.by("created").descending())).getContent();
     }
 
     @Override
     public Request findById(long userId, long requestId) throws NotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Ошибка"));
-        Request request = requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Ошибка"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        Request request = requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Неверный запрос"));
         return request;
     }
 }

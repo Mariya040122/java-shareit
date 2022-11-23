@@ -38,8 +38,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking create(long userId, BookingDto bookingDto) throws BadRequestException, NotFoundException {
         Booking booking = BookingMapper.fromBookingDto(bookingDto);
-        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException("Ошибка"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Ошибка"));
+        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException("Вещь не найдена"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         if (item.getAvailable()) {
             booking.setItem(item);
             LocalDateTime now = LocalDateTime.now();
@@ -61,7 +61,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking confirmationOrRejection(long userId, long bookingId, Boolean approved) throws BadRequestException,
             NotFoundException {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new BadRequestException("Ошибка"));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
+                new BadRequestException("Бронирование ненайдено"));
         if (itemRepository.findById(booking.getItem().getId()).get().getOwner().getId() == userId) {
             if (booking.getStatus() == WAITING) {
                 if (approved) {
@@ -70,25 +71,23 @@ public class BookingServiceImpl implements BookingService {
                 bookingRepository.save(booking);
                 return booking;
             } else throw new BadRequestException("Некорректный запрос ");
-        } else throw new NotFoundException("Не найдено");
+        } else throw new NotFoundException("Бронирование ненайдено");
 
     }
 
     @Override
     public Booking find(long userId, long bookingId) throws NotFoundException {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Не найдено"));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
+                new NotFoundException("Бронирование ненайдено"));
         if (booking.getBooker().getId() == userId ||
                 itemRepository.findById(booking.getItem().getId()).get().getOwner().getId() == userId) {
             return booking;
-        } else throw new NotFoundException("Не найдено");
+        } else throw new NotFoundException("Бронирование ненайдено");
     }
 
     @Override
     public List<Booking> findAll(long userId, int from, int size, State state) throws NotFoundException, BadRequestException {
-        if (from < 0 || size < 1) {
-            throw new BadRequestException("Ошибка");
-        }
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найдено"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         switch (state) {
@@ -122,7 +121,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> allUserItems(long userId, int from, int size, State state) throws NotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найдено"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         switch (state) {

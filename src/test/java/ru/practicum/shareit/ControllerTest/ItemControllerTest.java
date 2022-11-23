@@ -1,14 +1,14 @@
 package ru.practicum.shareit.ControllerTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.CommentService;
 import ru.practicum.shareit.item.ItemController;
@@ -28,28 +28,25 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.practicum.shareit.Status.WAITING;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(ItemController.class)
+@AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.DisplayName.class)
 public class ItemControllerTest {
-    @Mock
+    @MockBean
     private ItemService itemService;
-    @Mock
+    @MockBean
     private CommentService commentService;
 
-    @InjectMocks
-    private ItemController controller;
-
     private final ObjectMapper mapper = new ObjectMapper();
-
+    @Autowired
     private MockMvc mvc;
 
     private ItemDto itemDto;
 
     @BeforeEach
     void setUp() {
-        mvc = MockMvcBuilders
-                .standaloneSetup(controller)
-                .build();
+
+        mapper.registerModule(new JavaTimeModule());
 
         itemDto = new ItemDto(
                 1L,

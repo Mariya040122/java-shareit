@@ -9,6 +9,8 @@ import ru.practicum.shareit.request.model.Request;
 
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -40,8 +42,8 @@ public class RequestController {
     @SneakyThrows
     @GetMapping("/all")
     public List<Request> findAll(@RequestHeader("X-Sharer-User-Id") long userId,
-                                 @RequestParam(name = "from", defaultValue = "0") int from,
-                                 @RequestParam(name = "size", defaultValue = Integer.MAX_VALUE + "") int size) {
+                                 @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
+                                 @RequestParam(name = "size", defaultValue = "10") @Positive int size) {
         log.info("Получен запрос на получение списока запросов, созданных другими пользователями.");
         return service.findAll(userId, from, size);
     }
