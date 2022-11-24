@@ -10,10 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.ErrorResponse;
 import ru.practicum.shareit.exceptions.NotFoundException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 import java.util.List;
 
@@ -57,19 +60,23 @@ public class BookingController {
 
     @GetMapping
     public List<Booking> findAll(@RequestHeader("X-Sharer-User-Id") long userId,
+                                 @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
+                                 @RequestParam(name = "size", defaultValue = "10") @Positive int size,
                                  @RequestParam(name = "state", defaultValue = "ALL") State state)
-            throws NotFoundException {
+            throws NotFoundException, BadRequestException {
         log.info("Получение данных о всех бронированиях");
-        return service.findAll(userId, state);
+        return service.findAll(userId, from, size, state);
     }
 
 
     @GetMapping("/owner")
     public List<Booking> allUserItems(@RequestHeader("X-Sharer-User-Id") long userId,
+                                      @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
+                                      @RequestParam(name = "size", defaultValue = "10") @Positive int size,
                                       @RequestParam(name = "state", defaultValue = "ALL") State state)
             throws NotFoundException {
         log.info("Получение списка бронирований для всех вещей текущего пользователя.");
-        return service.allUserItems(userId, state);
+        return service.allUserItems(userId, from, size, state);
     }
 
 

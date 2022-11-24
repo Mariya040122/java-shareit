@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item;
 
+import org.springframework.data.domain.Sort;
+import ru.practicum.shareit.OffsetPageRequest;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -25,7 +27,6 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
-
     private final BookingRepository bookingRepository;
 
     public ItemServiceImpl(ItemRepository itemRepository,
@@ -56,10 +57,10 @@ public class ItemServiceImpl implements ItemService {
         if (item.isPresent()) {
             Item foundItem = item.get();
             if (foundItem.getOwner().getId() == userId) {
-                if (itemDto.getName() != null) {
+                if (itemDto.getName() != null && !itemDto.getName().isEmpty()) {
                     foundItem.setName(itemDto.getName());
                 }
-                if (itemDto.getDescription() != null) {
+                if (itemDto.getDescription() != null && !itemDto.getDescription().isEmpty()) {
                     foundItem.setDescription(itemDto.getDescription());
                 }
                 if (itemDto.getAvailable() != null) {
@@ -73,7 +74,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemWithBookingDTO find(long userId, long id) throws NotFoundException {
-        Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException(""));
+        Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException("Предмет не найден"));
         ItemWithBookingDTO itemDTO = ItemMapper.toItemWithBookingDTO(item);
         if (item.getOwner().getId() == userId) {
             LocalDateTime now = LocalDateTime.now();
@@ -90,8 +91,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemWithBookingDTO> findAll(long userId) {
-        List<ItemWithBookingDTO> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId)
+    public List<ItemWithBookingDTO> findAll(long userId, int from, int size) {
+        List<ItemWithBookingDTO> items = itemRepository.findAllByOwnerId(userId,
+                        new OffsetPageRequest(from, size, Sort.by("id").ascending())).getContent()
                 .stream()
                 .map(ItemMapper::toItemWithBookingDTO)
                 .collect(Collectors.toList());
@@ -110,10 +112,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> search(String text) {
+    public List<ItemDto> search(String text, int from, int size) {
         if (text.isEmpty()) {
             return new ArrayList<ItemDto>();
-        } else return itemRepository.search(text)
+        } else return itemRepository.search(text, new OffsetPageRequest(from, size, Sort.unsorted())).getContent()
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());

@@ -38,14 +38,14 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDTO createComment(long userId, long itemId, CommentDTO commentDTO) throws BadRequestException {
         Comment comment = CommentMapper.fromCommentDto(commentDTO);
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new BadRequestException(""));
-        User user = userRepository.findById(userId).orElseThrow(() -> new BadRequestException(""));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new BadRequestException("Неверный запрос"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new BadRequestException("Неверный запрос"));
         LocalDateTime now = LocalDateTime.now();
         if (!(bookingRepository.findBookingByItemAndUser(itemId, userId, APPROVED.name(), now)).isEmpty()) {
             comment.setItemId(itemId);
             comment.setAuthor(user);
             comment.setCreated(now);
             return (CommentMapper.toCommentDto(commentRepository.save(comment)));
-        } else throw new BadRequestException("");
+        } else throw new BadRequestException("Не верный запрос");
     }
 }

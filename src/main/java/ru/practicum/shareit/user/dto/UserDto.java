@@ -4,9 +4,11 @@ import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
 
-    long id; //уникальный идентификатор пользователя
+    Long id; //уникальный идентификатор пользователя
     String name; //имя или логин пользователя
     String email; //адрес электронной почты
 }

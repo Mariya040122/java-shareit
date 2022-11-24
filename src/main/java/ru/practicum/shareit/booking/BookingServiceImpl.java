@@ -1,7 +1,9 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.OffsetPageRequest;
 import ru.practicum.shareit.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -36,8 +38,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking create(long userId, BookingDto bookingDto) throws BadRequestException, NotFoundException {
         Booking booking = BookingMapper.fromBookingDto(bookingDto);
-        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException(""));
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(""));
+        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException("Вещь не найдена"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         if (item.getAvailable()) {
             booking.setItem(item);
             LocalDateTime now = LocalDateTime.now();
@@ -59,8 +61,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking confirmationOrRejection(long userId, long bookingId, Boolean approved) throws BadRequestException,
             NotFoundException {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new BadRequestException(""));
-        if (itemRepository.getReferenceById(booking.getItem().getId()).getOwner().getId() == userId) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
+                new BadRequestException("Бронирование ненайдено"));
+        if (itemRepository.findById(booking.getItem().getId()).get().getOwner().getId() == userId) {
             if (booking.getStatus() == WAITING) {
                 if (approved) {
                     booking.setStatus(APPROVED);
@@ -68,72 +71,83 @@ public class BookingServiceImpl implements BookingService {
                 bookingRepository.save(booking);
                 return booking;
             } else throw new BadRequestException("Некорректный запрос ");
-        } else throw new NotFoundException("Не найдено");
+        } else throw new NotFoundException("Бронирование ненайдено");
 
     }
-
 
     @Override
     public Booking find(long userId, long bookingId) throws NotFoundException {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Не найдено"));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
+                new NotFoundException("Бронирование ненайдено"));
         if (booking.getBooker().getId() == userId ||
-                itemRepository.getReferenceById(booking.getItem().getId()).getOwner().getId() == userId) {
+                itemRepository.findById(booking.getItem().getId()).get().getOwner().getId() == userId) {
             return booking;
-        } else throw new NotFoundException("Не найдено");
+        } else throw new NotFoundException("Бронирование ненайдено");
     }
 
     @Override
-    public List<Booking> findAll(long userId, State state) throws NotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найдено"));
+    public List<Booking> findAll(long userId, int from, int size, State state) throws NotFoundException, BadRequestException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findByBookerIdOrderByStartDesc(userId);
+                bookings = bookingRepository.findByBookerId(userId, new OffsetPageRequest(from, size,
+                        Sort.by("start").descending())).getContent();
                 break;
             case CURRENT:
-                bookings = bookingRepository.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
+                bookings = bookingRepository.findByBookerIdAndStartBeforeAndEndAfter(userId, now, now,
+                        new OffsetPageRequest(from, size, Sort.by("start").descending())).getContent();
                 break;
             case PAST:
-                bookings = bookingRepository.findByBookerIdAndEndBeforeOrderByStartDesc(userId, now);
+                bookings = bookingRepository.findByBookerIdAndEndBefore(userId, now,
+                        new OffsetPageRequest(from, size, Sort.by("start").descending())).getContent();
                 break;
             case FUTURE:
-                bookings = bookingRepository.findByBookerIdAndStartAfterOrderByStartDesc(userId, now);
+                bookings = bookingRepository.findByBookerIdAndStartAfter(userId, now,
+                        new OffsetPageRequest(from, size, Sort.by("start").descending())).getContent();
                 break;
             case WAITING:
-                bookings = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, WAITING);
+                bookings = bookingRepository.findByBookerIdAndStatus(userId, WAITING,
+                        new OffsetPageRequest(from, size, Sort.by("start").descending())).getContent();
                 break;
             case REJECTED:
-                bookings = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, REJECTED);
+                bookings = bookingRepository.findByBookerIdAndStatus(userId, REJECTED,
+                        new OffsetPageRequest(from, size, Sort.by("start").descending())).getContent();
                 break;
         }
         return bookings;
     }
 
     @Override
-    public List<Booking> allUserItems(long userId, State state) throws NotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найдено"));
+    public List<Booking> allUserItems(long userId, int from, int size, State state) throws NotFoundException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findByItem_OwnerIdOrderByStartDesc(userId);
+                bookings = bookingRepository.findByItem_OwnerId(userId, new OffsetPageRequest(from, size,
+                        Sort.by("start").descending())).getContent();
                 break;
             case CURRENT:
-                bookings = bookingRepository.findByItem_OwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
-                        now, now);
+                bookings = bookingRepository.findByItem_OwnerIdAndStartBeforeAndEndAfter(userId,
+                        now, now, new OffsetPageRequest(from, size, Sort.by("start").descending())).getContent();
                 break;
             case PAST:
-                bookings = bookingRepository.findByItem_OwnerIdAndEndBeforeOrderByStartDesc(userId, now);
+                bookings = bookingRepository.findByItem_OwnerIdAndEndBefore(userId, now,
+                        new OffsetPageRequest(from, size, Sort.by("start").descending())).getContent();
                 break;
             case FUTURE:
-                bookings = bookingRepository.findByItem_OwnerIdAndStartAfterOrderByStartDesc(userId, now);
+                bookings = bookingRepository.findByItem_OwnerIdAndStartAfter(userId, now,
+                        new OffsetPageRequest(from, size, Sort.by("start").descending())).getContent();
                 break;
             case WAITING:
-                bookings = bookingRepository.findByItem_OwnerIdAndStatusOrderByStartDesc(userId, WAITING);
+                bookings = bookingRepository.findByItem_OwnerIdAndStatus(userId, WAITING,
+                        new OffsetPageRequest(from, size, Sort.by("start").descending())).getContent();
                 break;
             case REJECTED:
-                bookings = bookingRepository.findByItem_OwnerIdAndStatusOrderByStartDesc(userId, REJECTED);
+                bookings = bookingRepository.findByItem_OwnerIdAndStatus(userId, REJECTED,
+                        new OffsetPageRequest(from, size, Sort.by("start").descending())).getContent();
                 break;
         }
         return bookings;
