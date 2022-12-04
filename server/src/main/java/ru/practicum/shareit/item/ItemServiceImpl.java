@@ -26,7 +26,6 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
-
     private final BookingRepository bookingRepository;
 
     public ItemServiceImpl(ItemRepository itemRepository,
@@ -57,10 +56,10 @@ public class ItemServiceImpl implements ItemService {
         if (item.isPresent()) {
             Item foundItem = item.get();
             if (foundItem.getOwner().getId() == userId) {
-                if (itemDto.getName() != null) {
+                if (itemDto.getName() != null && !itemDto.getName().isEmpty()) {
                     foundItem.setName(itemDto.getName());
                 }
-                if (itemDto.getDescription() != null) {
+                if (itemDto.getDescription() != null && !itemDto.getDescription().isEmpty()) {
                     foundItem.setDescription(itemDto.getDescription());
                 }
                 if (itemDto.getAvailable() != null) {
@@ -74,7 +73,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemWithBookingDTO find(long userId, long id) throws NotFoundException {
-        Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException(""));
+        Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException("Предмет не найден"));
         ItemWithBookingDTO itemDTO = ItemMapper.toItemWithBookingDTO(item);
         if (item.getOwner().getId() == userId) {
             LocalDateTime now = LocalDateTime.now();

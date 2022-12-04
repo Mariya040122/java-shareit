@@ -45,6 +45,6 @@ public class CommentServiceImpl implements CommentService {
             comment.setAuthor(user);
             comment.setCreated(now);
             return (CommentMapper.toCommentDto(commentRepository.save(comment)));
-        } else throw new BadRequestException("");
+        } else throw new BadRequestException("Не верный запрос");
     }
 }

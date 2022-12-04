@@ -4,6 +4,8 @@ import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemDto {
 
     Long id;  //уникальный идентификатор вещи

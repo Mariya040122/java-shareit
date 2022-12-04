@@ -4,6 +4,8 @@ import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
 
     Long id; //уникальный идентификатор пользователя

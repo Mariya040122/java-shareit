@@ -8,7 +8,6 @@ import ru.practicum.shareit.request.model.Request;
 import java.util.List;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
-
     List<Request> findByRequestorId(long requestorId);
 
     Page<Request> findByRequestorIdNot(long requestor, Pageable pageable);

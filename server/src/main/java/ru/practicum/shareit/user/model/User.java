@@ -7,6 +7,8 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.io.Serializable;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
