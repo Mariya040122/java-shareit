@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.request.OffsetPageRequest;
+import ru.practicum.shareit.OffsetPageRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(long userId, UserDto userDto) throws NotFoundException {
-        User user = repository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        User user = repository.getReferenceById(userId);
         User newUser = UserMapper.fromUserDto(userDto);
         if (user != null) {
             if (newUser.getName() != null) {
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     public UserDto find(long id) throws NotFoundException {
         Optional<User> user = repository.findById(id);
         if (user.isEmpty()) {
-            throw new NotFoundException("Ошибка");
+            throw new NotFoundException("");
         }
         return UserMapper.toUserDto(user.get());
     }
