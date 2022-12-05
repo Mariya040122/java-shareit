@@ -6,7 +6,7 @@ import lombok.ToString;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.io.Serializable;
+//import java.io.Serializable;
 import java.util.List;
 
 @Getter
@@ -14,7 +14,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "items")
-public class Item implements Serializable {
+public class Item {//implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class Item implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     User owner;  //владелец вещи
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "item_id")
     List<Comment> comments;
 
