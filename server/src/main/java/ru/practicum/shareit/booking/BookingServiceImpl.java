@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.OffsetPageRequest;
 import ru.practicum.shareit.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -11,7 +10,7 @@ import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.OffsetPageRequest;
+import ru.practicum.shareit.OffsetPageRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -39,8 +38,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking create(long userId, BookingDto bookingDto) throws BadRequestException, NotFoundException {
         Booking booking = BookingMapper.fromBookingDto(bookingDto);
-        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException("Вещь не найдена"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException(""));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(""));
         if (item.getAvailable()) {
             booking.setItem(item);
             LocalDateTime now = LocalDateTime.now();
@@ -62,9 +61,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking confirmationOrRejection(long userId, long bookingId, Boolean approved) throws BadRequestException,
             NotFoundException {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
-                new BadRequestException("Бронирование ненайдено"));
-        if (itemRepository.findById(booking.getItem().getId()).get().getOwner().getId() == userId) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new BadRequestException(""));
+        if (itemRepository.getReferenceById(booking.getItem().getId()).getOwner().getId() == userId) {
             if (booking.getStatus() == WAITING) {
                 if (approved) {
                     booking.setStatus(APPROVED);
@@ -72,18 +70,18 @@ public class BookingServiceImpl implements BookingService {
                 bookingRepository.save(booking);
                 return booking;
             } else throw new BadRequestException("Некорректный запрос ");
-        } else throw new NotFoundException("Бронирование ненайдено");
+        } else throw new NotFoundException("Не найдено");
 
     }
 
+
     @Override
     public Booking find(long userId, long bookingId) throws NotFoundException {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
-                new NotFoundException("Бронирование ненайдено"));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Не найдено"));
         if (booking.getBooker().getId() == userId ||
-                itemRepository.findById(booking.getItem().getId()).get().getOwner().getId() == userId) {
+                itemRepository.getReferenceById(booking.getItem().getId()).getOwner().getId() == userId) {
             return booking;
-        } else throw new NotFoundException("Бронирование ненайдено");
+        } else throw new NotFoundException("Не найдено");
     }
 
     @Override
