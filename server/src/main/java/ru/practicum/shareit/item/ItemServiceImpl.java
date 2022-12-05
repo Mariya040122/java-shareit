@@ -11,7 +11,7 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingDTO;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.OffsetPageRequest;
+import ru.practicum.shareit.OffsetPageRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.request.OffsetPageRequest;
+import ru.practicum.shareit.OffsetPageRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
