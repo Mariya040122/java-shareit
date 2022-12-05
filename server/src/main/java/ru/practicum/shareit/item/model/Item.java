@@ -34,7 +34,7 @@ public class Item implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     User owner;  //владелец вещи
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "item_id")
     List<Comment> comments;
 
