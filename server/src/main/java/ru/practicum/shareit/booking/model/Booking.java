@@ -1,7 +1,9 @@
 package ru.practicum.shareit.booking.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.shareit.Status;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
@@ -21,11 +23,9 @@ public class Booking implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;  //уникальный идентификатор бронирования
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "start_date")
     LocalDateTime start; //дата и время начала бронирования
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "end_date")
     LocalDateTime end; //дата и время конца бронирования
@@ -41,5 +41,6 @@ public class Booking implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column
     Status status; //статус бронирования
+
 
 }
