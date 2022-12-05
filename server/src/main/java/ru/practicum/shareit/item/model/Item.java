@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.shareit.user.model.User;
-
+import java.io.Serializable;
 import javax.persistence.*;
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "items")
-public class Item {
+public class Item implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
