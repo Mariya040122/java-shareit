@@ -11,7 +11,7 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingDTO;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.OffsetPageRequest;
+import ru.practicum.shareit.OffsetPageRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -26,6 +26,7 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+
     private final BookingRepository bookingRepository;
 
     public ItemServiceImpl(ItemRepository itemRepository,
@@ -56,10 +57,10 @@ public class ItemServiceImpl implements ItemService {
         if (item.isPresent()) {
             Item foundItem = item.get();
             if (foundItem.getOwner().getId() == userId) {
-                if (itemDto.getName() != null && !itemDto.getName().isEmpty()) {
+                if (itemDto.getName() != null) {
                     foundItem.setName(itemDto.getName());
                 }
-                if (itemDto.getDescription() != null && !itemDto.getDescription().isEmpty()) {
+                if (itemDto.getDescription() != null) {
                     foundItem.setDescription(itemDto.getDescription());
                 }
                 if (itemDto.getAvailable() != null) {
@@ -73,7 +74,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemWithBookingDTO find(long userId, long id) throws NotFoundException {
-        Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException("Предмет не найден"));
+        Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException(""));
         ItemWithBookingDTO itemDTO = ItemMapper.toItemWithBookingDTO(item);
         if (item.getOwner().getId() == userId) {
             LocalDateTime now = LocalDateTime.now();
