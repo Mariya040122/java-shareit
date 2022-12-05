@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.ErrorResponse;
 import ru.practicum.shareit.exceptions.NotFoundException;
 
@@ -59,7 +58,7 @@ public class BookingController {
                                  @RequestParam(name = "from", defaultValue = "0") int from,
                                  @RequestParam(name = "size", defaultValue = "10") int size,
                                  @RequestParam(name = "state", defaultValue = "ALL") State state)
-            throws NotFoundException, BadRequestException {
+            throws NotFoundException {
         log.info("Получение данных о всех бронированиях");
         return service.findAll(userId, from, size, state);
     }
